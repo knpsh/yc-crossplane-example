@@ -1,0 +1,9 @@
+---
+apiVersion: cloud.yandex.crossplane.io/v1
+kind: Infra
+metadata:
+  name: project
+spec:
+  name: project
+  stage: test
+  cloud_id: 123456

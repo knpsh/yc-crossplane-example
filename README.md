@@ -19,6 +19,12 @@ helm list -n crossplane-system
 kubectl get all -n crossplane-system
 ```
 
+Install Crossplane CLI:
+```
+curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
+sudo mv kubectl-crossplane $(dirname $(which kubectl))
+```
+
 ### Install provider
 
 Install provider:

@@ -1,0 +1,231 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition                                                  # We're specifying that we are defining a core Crossplane component
+metadata:
+  name: xinfras.cloud.yandex.crossplane.io
+spec:
+  compositeTypeRef:
+    apiVersion: cloud.yandex.crossplane.io/v1
+    kind: XInfra                                                   # Referencing our XR kind
+  resources:                                                       # The resources block is where we begin defining what to create
+  # Folder - Managed Resource
+  - base:                                                          # For each thing (MR) we create, we will include a 'base' block
+      apiVersion: resourcemanager.yandex-cloud.jet.crossplane.io/v1alpha1 # Here we are saying we want to create something in Yandex.Cloud
+      kind: Folder                                                 # Here we are saying we want to create a Folder
+      spec:
+        forProvider:                                               # ForProvider block basically contains all the required for cloud platform information
+          description: Crossplane demo folder
+    patches:                                                       # Patches is how we take values from our XR and pass to Composition
+      - fromFieldPath: spec.name                                   # We are taking spec.name from XR
+        toFieldPath: metadata.name                                 # Injecting it into MR metadata.name field
+        transforms:                                                # Transforms allow us to manipulate the value passed in before setting to MR
+          - type: string
+            string:
+              fmt: "%s-folder"
+      - fromFieldPath: spec.name                                   # Filling labels, which can be referenced from other MRs
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name                         # Setting the name of the resource in Yandex.Cloud
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-folder"
+      - fromFieldPath: spec.cloud_id                               # Getting cloud_id from XR
+        toFieldPath: spec.forProvider.cloudId
+      - fromFieldPath: spec.stage                                  # Setting ProviderConfigRef based on stage field from XR
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud
+  # VPC - Managed Resource
+  - base:
+      apiVersion: vpc.yandex-cloud.jet.crossplane.io/v1alpha1
+      kind: Network
+      spec:
+        forProvider:
+          description: Crossplane demo
+          folderIdSelector:                                        # Selecting a folder with matching controller, but can be selected with labels or specified directly      
+            matchControllerRef: true
+    patches:
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-vpc"
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-vpc"
+      - fromFieldPath: spec.stage
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud
+  # Subnets - Managed Resources
+  - base:
+      apiVersion: vpc.yandex-cloud.jet.crossplane.io/v1alpha1
+      kind: Subnet
+      spec:
+        forProvider:
+          v4CidrBlocks:
+            - 10.0.111.0/24
+          zone: ru-central1-a
+          folderIdSelector:
+            matchControllerRef: true
+          networkIdSelector:                                      # Selecting a network with matching controller (we have only one network defined)
+            matchControllerRef: true
+    patches:
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-a"
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-a"
+      - fromFieldPath: spec.stage
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud
+  - base:
+      apiVersion: vpc.yandex-cloud.jet.crossplane.io/v1alpha1
+      kind: Subnet
+      spec:
+        forProvider:
+          v4CidrBlocks:
+            - 10.0.112.0/24
+          zone: ru-central1-b
+          folderIdSelector:
+            matchControllerRef: true
+          networkIdSelector:
+            matchControllerRef: true
+    patches:
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-b"
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-b"
+      - fromFieldPath: spec.stage
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud
+  - base:
+      apiVersion: vpc.yandex-cloud.jet.crossplane.io/v1alpha1
+      kind: Subnet
+      spec:
+        forProvider:
+          v4CidrBlocks:
+            - 10.0.113.0/24
+          zone: ru-central1-c
+          folderIdSelector:
+            matchControllerRef: true
+          networkIdSelector:
+            matchControllerRef: true
+    patches:
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-c"
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-c"
+      - fromFieldPath: spec.stage
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud
+  # VM - Managed Resource
+  - base:
+      apiVersion: compute.yandex-cloud.jet.crossplane.io/v1alpha1
+      kind: Instance
+      spec:
+        forProvider:
+          folderIdSelector:
+            matchControllerRef: true
+          platformId: standard-v1
+          zone: ru-central1-a
+          resources:
+            - cores: 2
+              memory: 4
+          bootDisk:
+            - initializeParams:
+                # ubuntu 20.04
+                # yc compute image list --folder-id standard-images | grep 'ubuntu-20-04-lts'
+                - imageId: fd8ot0k0vde438jv0t8j
+          networkInterface:
+          - nat: true
+          metadata:
+            ssh-keys: "ubuntu:ssh-rsa xxx"
+    patches:
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-vm-a"
+      - fromFieldPath: spec.name
+        toFieldPath: metadata.labels[crossplane.io/app]
+      - fromFieldPath: spec.stage
+        toFieldPath: metadata.labels[crossplane.io/stage]
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-vm-a"
+      - fromFieldPath: spec.name
+        toFieldPath: spec.forProvider.networkInterface[0].subnetIdRef.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-subnet-a"
+      - fromFieldPath: spec.stage
+        toFieldPath: spec.providerConfigRef.name
+        transforms:
+          - type: map
+            map:
+              test: yandex-cloud

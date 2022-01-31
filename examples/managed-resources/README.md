@@ -47,7 +47,7 @@ providerconfigs                                yandex-cloud.jet.crossplane.io/v1
 providerconfigusages                           yandex-cloud.jet.crossplane.io/v1alpha1                   false        ProviderConfigUsage
 ```
 
-You can also check supportable parameters within a resource with `kubectl explain` command:
+You can also check supported parameters within a resource with `kubectl explain` command:
 ```
 $ kubectl explain Instance.spec.forProvider
 KIND:     Instance

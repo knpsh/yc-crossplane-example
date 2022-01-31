@@ -1,0 +1,37 @@
+---
+apiVersion: apiextensions.crossplane.io/v1 # Crossplane machinery
+kind: CompositeResourceDefinition          # Creating an XRD
+metadata:
+  name: xinfras.cloud.yandex.crossplane.io # Combining the plural name with group
+spec:
+  group: cloud.yandex.crossplane.io        # Defining an API path we like
+  names:
+    kind: XInfra                           # Making up any name we choose, and prefacing with 'X' to denote Composite Resource
+    plural: xinfras                        # Providing the plural version of the kind, naming practices dictate it is lowercase
+  claimNames:
+    kind: Infra
+    plural: infras
+  versions:
+    - name: v1                             # We're defining an API version, that will be used with Composition versioning
+      served: true
+      referenceable: true
+      schema:                              # Schema definition
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:                          # Spec block
+              type: object
+              properties:
+                name:                      # Expecting spec.name
+                  type: string
+                  description: Project name.
+                stage:                     # Expecting spec.stage
+                  type: string
+                  description: Project stage.
+                cloud_id:                  # Expecting spec.cloud_id
+                  type: string
+                  description: Yandex.Cloud cloud_id.
+          required:                        # Required fields
+            - name
+            - stage
+            - cloud_id

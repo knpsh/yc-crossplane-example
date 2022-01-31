@@ -1,0 +1,11 @@
+apiVersion: vpc.yandex-cloud.jet.crossplane.io/v1alpha1
+kind: Network
+metadata:
+  name: example-net
+spec:
+  forProvider:
+    name: example-net
+    folderIdRef:
+      name: example-folder
+  providerConfigRef:
+    name: example

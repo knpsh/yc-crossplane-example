@@ -1,0 +1,16 @@
+apiVersion: storage.yandex-cloud.jet.crossplane.io/v1alpha1
+kind: Bucket
+metadata:
+  name: example-bucket
+spec:
+  forProvider:
+    accessKeyRef:
+      name: example-sa-static-key
+    secretKeySecretRef:
+      name: sa-key-conn
+      namespace: crossplane-system
+      key: attribute.secret_key
+    bucket: "example-test-bucket"
+    acl: "public-read"
+  providerConfigRef:
+    name: example

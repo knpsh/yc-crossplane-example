@@ -1,0 +1,18 @@
+apiVersion: storage.yandex-cloud.jet.crossplane.io/v1alpha1
+kind: Object
+metadata:
+  name: example-object
+spec:
+  forProvider:
+    contentBase64: MTIzNDU2Nzg=
+    key: "cute-cat"
+    accessKeyRef:
+      name: example-sa-static-key
+    secretKeySecretRef:
+      name: sa-key-conn
+      namespace: crossplane-system
+      key: attribute.secret_key
+    bucketRef:
+      name: example-bucket
+  providerConfigRef:
+    name: example

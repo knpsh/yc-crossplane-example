@@ -1,0 +1,43 @@
+apiVersion: kubernetes.yandex-cloud.jet.crossplane.io/v1alpha1
+kind: NodeGroup
+metadata:
+  name: example-nodegroup
+spec:
+  forProvider:
+    clusterIdRef:
+      name: example-cluster
+    name: example-cluster
+    description: provider-jet-yc nodegroup
+    version: "1.21"
+    instanceTemplate:
+      - platformId: "standard-v2"
+        networkInterface:
+          - nat: true
+            subnetIdsRefs:
+              - name: example-subnet-a
+        resources:
+          - memory: 2
+            cores: 2
+        bootDisk:
+          - type: "network-hdd"
+            size: 64
+        schedulingPolicy:
+          - preemptible: true
+    scalePolicy:
+      - fixedScale:
+          - size: 1
+    allocationPolicy:
+      - location:
+          - zone: "ru-central1-a"
+    maintenancePolicy:
+      - autoUpgrade: true
+        autoRepair: true
+        maintenanceWindow:
+          - startTime: "15:00"
+            duration: "3h"
+            day: "monday"
+          - startTime: "10:00"
+            duration: "4h30m"
+            day: "friday"
+  providerConfigRef:
+    name: example

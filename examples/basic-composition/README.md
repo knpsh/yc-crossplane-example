@@ -33,11 +33,6 @@ test-5   True                        25m
 ```
 
 ```
-$ kubectl get infras
-
-NAME     READY   CONNECTION-SECRET   AGE
-test-5   True                        25m
-
 $ kubectl get composite
 NAME           READY   COMPOSITION                          AGE
 test-5-n48jf   True    xinfras.cloud.yandex.crossplane.io   25m
